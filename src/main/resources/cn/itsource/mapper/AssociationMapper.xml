@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.itsource.mapper.AssociationMapper">
+    <insert id="add">
+        insert into ass_association(
+            id,ass_id,ass_name,create_time,user_id
+        )values (
+                    #{id},#{ass_id},#{ass_name},#{create_time},#{user_id}
+                )
+    </insert>
+    <update id="update">
+        update ass_association set
+                    id=#{id},ass_id=#{ass_id},ass_name=#{ass_name},create_time=#{create_time},
+                    user_id=#{user_id}
+        where id=#{id}
+    </update>
+    <delete id="deleteById">
+        delete  from  ass_association where id=#{id}
+    </delete>
+    <delete id="batchDelete">
+        delete from ass_association where id in
+        <foreach collection="list" separator="," item="id" open="(" close=")">
+            #{id}
+        </foreach>
+    </delete>
+    <select id="selectAll" resultType="cn.itsource.domain.Association">
+        select * from ass_association
+    </select>
+    <select id="selectById" resultType="cn.itsource.domain.Association">
+        select * from ass_association where id=#{id}
+    </select>
+    <select id="selectByPage" resultMap="AssociationMap">
+        SELECT
+        d.*,
+        e.fname
+        from ass_association d
+        LEFT JOIN ass_member e ON d.user_id=e.user_id
+        <include refid="whereSQL"></include>
+        limit #{start},#{pageSize}
+    </select>
+    <resultMap id="AssociationMap" type="Association">
+        <id column="id" property="id"></id>
+        <result column="ass_id" property="ass_id"></result>
+        <result column="ass_name" property="ass_name"></result>
+        <result column="create_time" property="create_time"></result>
+        <result column="user_id" property="user_id"></result>
+        <association property="name" javaType="Member">
+            <result column="fname" property="fname"></result>
+        </association>
+    </resultMap>
+    <select id="count" resultType="java.lang.Long">
+        select count(id) from ass_association d
+        <include refid="whereSQL"></include>
+    </select>
+
+    <sql id="whereSQL">
+        <where>
+            <if test="keyword!=null and keyword!=''">
+               d.ass_name like concat('%',#{keyword},'%')
+            </if>
+        </where>
+    </sql>
+</mapper>

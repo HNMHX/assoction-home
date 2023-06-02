@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.itsource.mapper.IMemberMapper">
+    <insert id="add" flushCache="true" keyProperty="id" keyColumn="id">
+        insert into ass_member(user_id, fname, work_id, ass_id, ftime, phone, email)
+        values (#{user_id}, #{fname}, #{work_id}, #{ass_id}, #{ftime},#{phone}, #{email})
+    </insert>
+    <update id="update">
+        update ass_member set
+                                user_id=#{user_id},fname=#{fname},work_id=#{work_id},
+                               ftime=#{ftime},ass_id=#{ass_id},phone=#{phone},email=#{email}
+        where id=#{id}
+    </update>
+    <delete id="deleteById">
+        delete from ass_member where id=#{id}
+    </delete>
+    <delete id="batchDelete">
+        delete from ass_member where id in
+        <foreach collection="list" separator="," item="id" open="(" close=")">
+            #{id}
+        </foreach>
+    </delete>
+    <select id="selectAll" resultType="cn.itsource.domain.Member">
+        select  * from ass_member
+    </select>
+    <select id="selectById" resultType="cn.itsource.domain.Member">
+        select  * from ass_member where id=#{id}
+    </select>
+    <select id="selectByPage" resultType="cn.itsource.domain.Member">
+        select * from ass_member m
+            <include refid="whereSQL"></include>
+            limit #{start},#{pageSize}
+    </select>
+    <select id="count" resultType="java.lang.Long">
+        select count(id) from ass_member m
+        <include refid="whereSQL"></include>
+    </select>
+    <sql id="whereSQL">
+        <where>
+            <if test="keyword != null and keyword != ''">
+                m.fname like concat('%',#{keyword},'%')
+            </if>
+        </where>
+    </sql>
+</mapper>

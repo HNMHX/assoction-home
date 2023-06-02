@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.itsource.mapper.INationMapper">
+    <insert id="add">
+        insert into ass_nation(
+            title,content,create_time,user_id
+        )values (
+            #{title},#{content},#{create_time},#{user_id}
+        )
+    </insert>
+    <update id="update">
+        update ass_nation set
+            title=#{title},content=#{content},create_time=#{create_time},user_id=#{user_id}
+        where id=#{id}
+    </update>
+    <delete id="deleteById">
+        delete from ass_nation where id=#{id}
+    </delete>
+    <delete id="batchDelete">
+        delete from ass_nation where id in
+        <foreach collection="list" separator="," item="id" open="(" close=")">
+            #{id}
+        </foreach>
+    </delete>
+    <select id="selectAll" resultType="cn.itsource.domain.Nation">
+        select * from ass_nation
+    </select>
+    <select id="selectById" resultType="cn.itsource.domain.Nation">
+        select * from ass_nation where id=#{id}
+    </select>
+    <select id="selectByPage" resultMap="NationMap">
+        SELECT
+        d.*,
+        e.fname
+        FROM ass_nation d
+        LEFT JOIN ass_member e ON d.user_id=e.user_id
+        <include refid="whereSQL"></include>
+        limit #{start},#{pageSize}
+    </select>
+    <resultMap id="NationMap" type="Nation">
+        <id column="id" property="id"></id>
+        <result column="title" property="title"></result>
+        <result column="content" property="content"></result>
+        <result column="create_time" property="create_time"></result>
+        <result column="user_id" property="user_id"></result>
+        <association property="name" javaType="Member">
+            <result column="fname" property="fname"></result>
+        </association>
+    </resultMap>
+    <select id="count" resultType="java.lang.Long">
+        select count(id) from ass_nation d
+        <include refid="whereSQL"></include>
+    </select>
+    <sql id="whereSQL">
+        <where>
+            <if test="keyword!=null and keyword!=''">
+                d.title like concat('%',#{keyword},'%')
+            </if>
+        </where>
+    </sql>
+</mapper>

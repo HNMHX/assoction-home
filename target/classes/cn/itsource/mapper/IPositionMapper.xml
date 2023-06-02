@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.itsource.mapper.IPositionMapper">
+    <insert id="add">
+            insert into ass_position(
+                work_id,work_name,fwork,work_nam
+            )values (
+                #{work_id},#{work_name},#{fwork},#{work_nam}
+                    )
+    </insert>
+
+    <update id="update">
+        update ass_position set
+                                fwork=#{fwork},
+                                work_id=#{work_id},work_name=#{work_name},work_nam=#{work_nam}
+        where id=#{id}
+    </update>
+
+    <delete id="deleteById">
+        delete  from  ass_position where id=#{id}
+    </delete>
+
+    <delete id="batchDelete">
+        delete  from  ass_position where id in
+        <foreach collection="list" separator="," item="id" open="(" close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="selectAll" resultType="cn.itsource.domain.Position">
+        select * from ass_position
+    </select>
+
+    <select id="selectById" resultType="cn.itsource.domain.Position">
+        select * from ass_position where id=#{id}
+    </select>
+
+    <select id="selectByPage" resultType="cn.itsource.domain.Position"><!--resultMap="PositionMap"-->
+        SELECT
+        p.*,
+        m.fname,m.work_id mid
+        FROM ass_position p
+        LEFT JOIN ass_member m ON p.work_id=m.work_id
+        <include refid="whereSQL"></include>
+        limit #{start},#{pageSize}
+    </select><!--分页选择查询-->
+
+
+    <select id="count" resultType="java.lang.Long">
+        select count(id) from ass_position p
+        <include refid="whereSQL"></include>
+    </select>
+
+    <sql id="whereSQL">
+        <where>
+            <if test="keyword!=null and keyword!=''">
+                p.work_id like concat('%',#{keyword},'%')
+            </if>
+        </where>
+    </sql>
+</mapper>

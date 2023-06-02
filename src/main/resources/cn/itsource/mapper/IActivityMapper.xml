@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.itsource.mapper.IActivityMapper">
+    <select id="selectAll" resultType="cn.itsource.domain.Activity">
+        SELECT * FROM ass_active
+    </select>
+    <select id="selectById" resultType="cn.itsource.domain.Activity">
+        SELECT * FROM ass_active WHERE id =#{id}
+    </select>
+    <select id="selectByPage" resultMap="ActivityMap">
+        select
+        a.*,
+        e.username
+        FROM ass_active a
+        LEFT JOIN t_employee e ON a.user_id=e.id
+        <include refid="resultMapSQL"></include>
+        limit #{start},#{pageSize}
+    </select>
+    <resultMap id="ActivityMap" type="cn.itsource.domain.Activity">
+        <id column="id" property="id"></id>
+        <result column="active_name" property="active_name"></result>
+        <result column="fcontent" property="fcontent"></result>
+        <result column="state" property="state"></result>
+        <result column="user_id" property="user_id"></result>
+        <association property="manager" javaType="cn.itsource.domain.Employee">
+            <id column="id" property="id"></id>
+            <result column="username" property="username"></result>
+        </association>
+    </resultMap>
+    <select id="count" resultType="java.lang.Long">
+        select count(id) from ass_active a
+        <include refid="resultMapSQL"></include>
+    </select>
+    <sql id="resultMapSQL">
+        <where>
+            <if test="keyword !=null and keyword !=''">
+                a.active_name like concat('%',#{keyword},'%')
+            </if>
+        </where>
+    </sql>
+    <insert id="add">
+        insert into ass_active(
+            id,active_name,fcontent,state,user_id
+        )values (
+            #{id},#{active_name},#{fcontent},#{state},#{user.id}
+                )
+    </insert>
+    <update id="update">
+        update ass_active set
+            active_name=#{active_name},
+            fcontent=#{fcontentte},
+            state=#{state}
+            user_id=#{user.id}
+        where id=#{id}
+    </update>
+    <delete id="delete">
+        delete from ass_active
+        where id = #{id}
+    </delete>
+    <delete id="batchRemove">
+        delete from ass_active where id in
+        <foreach collection="list" separator="," item="id" open="(" close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

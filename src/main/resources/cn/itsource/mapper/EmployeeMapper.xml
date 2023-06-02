@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.itsource.mapper.EmployeeMapper">
+    <insert id="add">
+        insert into t_employee(
+            username,email,phone,salt,password,age,state,department_id,logininfo_id,shop_id
+        )values (
+                    #{username},#{email},#{phone},#{salt},#{password},#{age},#{state},#{department_id},#{logininfo_id},#{shop_id}
+                )
+    </insert>
+    <update id="update">
+        update t_employee set
+                sn=#{sn},name=#{name},dirPath=#{dirPath},state=#{state},
+                manager_id=#{manager.id},parent_id=#{parent.id}
+        where id=#{id}
+    </update>
+    <delete id="deleteById">
+        delete  from  t_employee where id=#{id}
+    </delete>
+    <delete id="batchDelete">
+        delete from t_employee where id in
+        <foreach collection="list" separator="," item="id" open="(" close=")">
+            #{id}
+        </foreach>
+    </delete>
+    <select id="selectAll" resultType="cn.itsource.domain.Employee">
+        select * from t_employee
+    </select>
+    <select id="selectById" resultType="cn.itsource.domain.Employee">
+        select * from t_employee where id=#{id}
+    </select>
+<!--    <select id="selectByPage" resultMap="EmployeeMap">
+        SELECT
+        d.*,
+        e.id eid,e.username,
+        d1.id did,d1.name dname
+        FROM t_employee d
+        LEFT JOIN t_employee e ON d.manager_id=e.id
+        LEFT JOIN t_employee d1 ON d.parent_id=d1.id
+        <include refid="whereSQL"></include>
+        limit #{start},#{pageSize}
+    </select>-->
+<!--    <resultMap id="EmployeeMap" type="Employee">
+        <id column="id" property="id"></id>
+        <result column="sn" property="sn"></result>
+        <result column="name" property="name"></result>
+        <result column="dirPath" property="dirPath"></result>
+        <result column="state" property="state"></result>
+        <result column="manager_id" property="manager_id"></result>
+        <result column="parent_id" property="parent_id"></result>
+        <association property="manager" javaType="Employee">
+            <id column="eid" property="id"></id>
+            <result column="username" property="username"></result>
+        </association>
+        <association property="parent" javaType="Employee">
+            <id column="did" property="id"></id>
+            <result column="dname" property="name"></result>
+        </association>
+    </resultMap>-->
+    <select id="count" resultType="java.lang.Long">
+        select count(id) from t_employee d
+        <include refid="whereSQL"></include>
+    </select>
+    <select id="selectByPage" resultType="cn.itsource.domain.Employee"></select>
+    <select id="selectByUsername" resultType="cn.itsource.domain.Employee">
+            select * from t_employee where username=#{username}
+    </select>
+
+    <sql id="whereSQL">
+        <where>
+            <if test="keyword!=null and keyword!=''">
+                d.name like concat('%',#{keyword},'%')
+            </if>
+        </where>
+    </sql>
+</mapper>
