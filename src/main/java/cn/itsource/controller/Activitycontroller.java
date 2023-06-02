@@ -29,8 +29,6 @@ public class Activitycontroller {
     @ApiOperation("根据id查询")
     public Activity queryById(@PathVariable ("id") Long id){
        return activityService.queryId(id);
-
-
     }
     @PostMapping()
     @ApiOperation("分页")
