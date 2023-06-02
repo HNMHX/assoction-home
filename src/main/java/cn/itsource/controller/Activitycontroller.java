@@ -36,6 +36,10 @@ public class Activitycontroller {
     @ApiOperation("分页")
     public PageList<Activity> queryByPage(@RequestBody ActivityQuery query){
         return activityService.queryByPage(query);
+
+
+
+
     }
 
     @PutMapping()
